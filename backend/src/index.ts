@@ -74,6 +74,34 @@ fastify.after(() => {
       msg: 'success'
     };
   });
+
+  // 获取应用列表接口
+  fastify.get('/api/applist', async (request, reply) => {
+    return {
+      code: 20000,
+      data: [
+        {
+          id: 1,
+          name: '示例应用A',
+          updateCount: 5,
+          status: '正常',
+          package: 'app-a.pkg',
+          version: '1.2.3',
+          repo: 'https://github.com/example/app-a',
+        },
+        {
+          id: 2,
+          name: '示例应用B',
+          updateCount: 2,
+          status: '异常',
+          package: 'app-b.pkg',
+          version: '2.0.1',
+          repo: 'https://github.com/example/app-b',
+        },
+      ],
+      msg: 'success'
+    };
+  });
 });
 
 const start = async () => {
