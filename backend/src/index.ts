@@ -18,9 +18,9 @@ fastify.after(() => {
     const { username, password } = request.body as { username: string; password: string };
     if (username === 'admin' && password === '123456') {
       const token = (fastify as any).jwt.sign({ username });
-      return { token };
+      return { code: 20000, data: { token }, msg: 'success' };
     } else {
-      reply.code(401).send({ error: 'Invalid credentials' });
+      reply.code(401).send({ code: 401, msg: 'Invalid credentials' });
     }
   });
 
@@ -45,6 +45,34 @@ fastify.after(() => {
   fastify.get('/api/profile', { preHandler: [(fastify as any).authenticate] }, async (request, reply) => {
     // request.user 包含解码后的 token 信息
     return { user: (request as any).user };
+  });
+
+  // 用户信息接口
+  fastify.post('/api/user/info', async (request, reply) => {
+    // 简单示例，实际应校验 token 并返回用户信息
+    // 这里假设已登录用户为 admin
+    return {
+      code: 20000,
+      data: {
+        name: 'admin',
+        role: 'admin',
+        avatar: '',
+        job: '前端工程师',
+        organization: 'ACME',
+        location: 'China',
+        email: 'admin@example.com',
+        introduction: '管理员',
+        personalWebsite: '',
+        jobName: '前端',
+        organizationName: 'ACME',
+        locationName: '中国',
+        phone: '123456789',
+        registrationDate: '2025-01-01',
+        accountId: '1',
+        certification: '',
+      },
+      msg: 'success'
+    };
   });
 });
 

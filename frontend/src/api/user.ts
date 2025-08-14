@@ -11,7 +11,8 @@ export interface LoginRes {
   token: string;
 }
 export function login(data: LoginData) {
-  return axios.post<LoginRes>('/api/user/login', data);
+  // 直接请求后端服务
+  return axios.post<LoginRes>('http://localhost:3001/api/login', data);
 }
 
 export function logout() {
