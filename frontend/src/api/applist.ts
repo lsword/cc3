@@ -12,7 +12,7 @@ export interface ApplistItem {
 
 export function getApplist(): Promise<ApplistItem[]> {
   return axios
-    .get('/api/applist')
+    .get('/api/applist', { params: { namespace: 'default' } })
     .then((res) => {
       console.log('applist api response:', res);
       return res.data ?? [];
