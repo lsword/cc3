@@ -18,3 +18,14 @@ export function getApplist(): Promise<ApplistItem[]> {
       return res.data ?? [];
     });
 }
+
+export function getAppDetail(name: string): Promise<ApplistItem | null> {
+  return axios
+    .get(`/api/app/${encodeURIComponent(name)}`, { params: { namespace: 'default' } })
+    .then((res) => {
+      if (res.data && res.data.code === 20000) {
+        return res.data.data;
+      }
+      return null;
+    });
+}

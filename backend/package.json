@@ -8,6 +8,7 @@
     "dev": "nodemon --watch src --exec 'node --loader ts-node/esm src/index.ts'"
   },
   "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
     "@types/node": "^24.2.1",
     "fastify": "^5.5.0",
     "nodemon": "^3.1.10",
@@ -17,6 +18,7 @@
   },
   "dependencies": {
     "@fastify/cors": "^11.1.0",
-    "@fastify/jwt": "^10.0.0"
+    "@fastify/jwt": "^10.0.0",
+    "js-yaml": "^4.1.0"
   }
 }

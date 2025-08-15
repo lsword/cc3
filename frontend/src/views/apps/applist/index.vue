@@ -27,6 +27,11 @@
           <a-button type="outline" size="mini" :danger="true">删除</a-button>
         </a-space>
       </template>
+      <template #name="{ record }">
+        <router-link :to="`/app/${record.name}`" style="color: #165dff; text-decoration: underline;">
+          {{ record.name }}
+        </router-link>
+      </template>
     </a-table>
   </div>
 </template>
@@ -36,7 +41,7 @@ import { ref, computed, onMounted } from 'vue';
 import { getApplist, type ApplistItem } from '@/api/applist';
 
 const columns = [
-  { title: '应用名称', dataIndex: 'name', align: 'center' },
+  { title: '应用名称', dataIndex: 'name', slotName: 'name', align: 'center' },
   { title: '更新次数', dataIndex: 'updateCount', align: 'center' },
   { title: '状态', dataIndex: 'status', slotName: 'status', align: 'center' },
   { title: '安装包', dataIndex: 'package', align: 'center' },

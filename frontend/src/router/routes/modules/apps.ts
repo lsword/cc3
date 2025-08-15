@@ -15,4 +15,27 @@ const APPS_APPLIST: AppRouteRecordRaw = {
   },
 };
 
-export default APPS_APPLIST;
+const APPS_APP_DETAIL: AppRouteRecordRaw = {
+  path: '/app',
+  name: 'AppsAppDetail',
+  component: DEFAULT_LAYOUT,
+  meta: {
+    locale: 'menu.apps.appDetail',
+    requiresAuth: true,
+    hideInMenu: true,
+  },
+  children: [
+    {
+      path: ':name',
+      name: 'AppsAppDetailPage',
+      component: () => import('@/views/apps/app/index.vue'),
+      meta: {
+        locale: 'menu.apps.appDetail',
+        requiresAuth: true,
+        hideInMenu: true,
+      },
+    },
+  ],
+};
+
+export default [APPS_APPLIST, APPS_APP_DETAIL];

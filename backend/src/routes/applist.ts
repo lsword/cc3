@@ -1,5 +1,6 @@
 import { FastifyInstance } from 'fastify';
 import { exec } from 'child_process';
+import yaml from 'js-yaml';
 
 export default async function applistRoutes(fastify: FastifyInstance) {
   fastify.get('/api/applist', async (request, reply) => {
@@ -29,8 +30,6 @@ export default async function applistRoutes(fastify: FastifyInstance) {
             version: item.app_version,
             repo: '', // helm list 不直接返回 repo，可后续扩展
           }));
-          console.log(result);
-          console.log(data);
           resolve({
             code: 20000,
             data,
@@ -41,6 +40,46 @@ export default async function applistRoutes(fastify: FastifyInstance) {
             code: 500,
             msg: 'Helm 输出解析失败',
             data: []
+          });
+        }
+      });
+    });
+  });
+
+  fastify.get('/api/app/:name', async (request, reply) => {
+    const namespace = (request.query as any).namespace || 'default';
+    const name = (request.params as any).name;
+
+    // 用 helm get manifest 获取指定 app 的 manifest
+    const cmd = `helm get manifest -n ${namespace} ${name}`;
+    return new Promise((resolve) => {
+      exec(cmd, (error, stdout, stderr) => {
+        if (error) {
+          resolve({
+            code: 500,
+            msg: `获取 Helm manifest 失败: ${stderr || error.message}`,
+            data: null
+          });
+          return;
+        }
+        try {
+          // manifest 可能包含多个 yaml 文档，用 --- 分隔
+          const docs = stdout
+            .split(/^---$/m)
+            .map((doc: string) => doc.trim())
+            .filter((doc: string) => doc.length > 0)
+            .map((doc: string) => yaml.load(doc));
+          resolve({
+            code: 20000,
+            data: docs,
+            msg: 'success'
+          });
+        } catch (e) {
+          console.error('Manifest 解析异常:', e);
+          resolve({
+            code: 500,
+            msg: 'Manifest 解析失败',
+            data: { error: e, manifest: stdout }
           });
         }
       });
