@@ -19,13 +19,22 @@ export function getApplist(): Promise<ApplistItem[]> {
     });
 }
 
-export function getAppDetail(name: string): Promise<ApplistItem | null> {
+export interface K8sManifest {
+  apiVersion: string;
+  kind: string;
+  metadata: {
+    name: string;
+    labels?: Record<string, string>;
+    [key: string]: any;
+  };
+  spec?: any;
+  [key: string]: any;
+}
+
+export function getAppDetail(name: string): Promise<K8sManifest[] | null> {
   return axios
     .get(`/api/app/${encodeURIComponent(name)}`, { params: { namespace: 'default' } })
     .then((res) => {
-      if (res.data && res.data.code === 20000) {
-        return res.data.data;
-      }
-      return null;
+      return res.data as K8sManifest[];
     });
 }

@@ -69,6 +69,7 @@ export default async function applistRoutes(fastify: FastifyInstance) {
             .map((doc: string) => doc.trim())
             .filter((doc: string) => doc.length > 0)
             .map((doc: string) => yaml.load(doc));
+          // 按 kind 分类
           resolve({
             code: 20000,
             data: docs,
