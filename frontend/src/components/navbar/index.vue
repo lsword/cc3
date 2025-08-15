@@ -6,12 +6,20 @@
           alt="logo"
           src="//p3-armor.byteimg.com/tos-cn-i-49unhts6dw/dfdba5317c0c20ce20e64fac803d52bc.svg~tplv-49unhts6dw-image.image"
         />
-        <a-typography-title
-          :style="{ margin: 0, fontSize: '18px' }"
-          :heading="5"
-        >
-          Arco Pro
-        </a-typography-title>
+      <a-typography-title
+        :style="{ margin: 0, fontSize: '18px' }"
+        :heading="5"
+      >
+        Arco Pro
+      </a-typography-title>
+      <a-select
+        v-model="selectedNamespace"
+        style="width: 140px; margin-left: 16px"
+        :options="namespaceOptions"
+        placeholder="命名空间"
+        @change="onNamespaceChange"
+        allow-clear
+      />
         <icon-menu-fold
           v-if="!topMenu && appStore.device === 'mobile'"
           style="font-size: 22px; cursor: pointer"
@@ -193,18 +201,49 @@
 </template>
 
 <script lang="ts" setup>
-  import { computed, ref, inject } from 'vue';
+  import { computed, ref, inject, watch } from 'vue';
   import { Message } from '@arco-design/web-vue';
+  import { ref as vueRef } from 'vue';
   import { useDark, useToggle, useFullscreen } from '@vueuse/core';
   import { useAppStore, useUserStore } from '@/store';
   import { LOCALE_OPTIONS } from '@/locale';
   import useLocale from '@/hooks/locale';
   import useUser from '@/hooks/user';
   import Menu from '@/components/menu/index.vue';
+  import { onMounted } from 'vue';
+  import { getNamespaces } from '@/api/namespaces';
   import MessageBox from '../message-box/index.vue';
 
   const appStore = useAppStore();
   const userStore = useUserStore();
+  // 页面挂载时自动拉取命名空间
+  onMounted(async () => {
+    // 判断已登录
+    if (userStore.userInfo.role !== '') {
+      const nsList = await getNamespaces();
+      appStore.setNamespaceList(nsList);
+    }
+  });
+  // 命名空间下拉
+  const namespaceOptions = computed(() =>
+    appStore.namespaceList.map((ns: string) => ({ label: ns, value: ns }))
+  );
+  const selectedNamespace = vueRef('');
+  // 自动选中第一个 namespace
+  watch(
+    namespaceOptions,
+    (opts) => {
+      if (opts.length && !selectedNamespace.value) {
+        selectedNamespace.value = opts[0].value;
+      }
+    },
+    { immediate: true }
+  );
+  const onNamespaceChange = (val: string) => {
+    // TODO: 可在此处全局切换命名空间
+    // console.log('namespace changed:', val);
+  };
+
   const { logout } = useUser();
   const { changeLocale, currentLocale } = useLocale();
   const { isFullscreen, toggle: toggleFullScreen } = useFullscreen();

@@ -7,7 +7,10 @@ import { getMenuList } from '@/api/user';
 import { AppState } from './types';
 
 const useAppStore = defineStore('app', {
-  state: (): AppState => ({ ...defaultSettings }),
+  state: (): AppState => ({
+    ...defaultSettings,
+    namespaceList: []
+  }),
 
   getters: {
     appCurrentSetting(state: AppState): AppState {
@@ -71,6 +74,9 @@ const useAppStore = defineStore('app', {
     clearServerMenu() {
       this.serverMenu = [];
     },
+    setNamespaceList(list: string[]) {
+      this.namespaceList = list;
+    }
   },
 });
 

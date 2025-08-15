@@ -4,6 +4,7 @@ import jwt from '@fastify/jwt';
 import applistRoutes from './routes/applist.js';
 import userRoutes from './routes/user.js';
 import authRoutes from './routes/auth.js';
+import namespacesRoutes from './routes/namespaces.js';
 
 const fastify = Fastify({
   logger: true
@@ -18,6 +19,7 @@ fastify.register(jwt, {
 fastify.register(applistRoutes);
 fastify.register(userRoutes);
 fastify.register(authRoutes);
+fastify.register(namespacesRoutes);
 
 // JWT 校验装饰器
 fastify.decorate(

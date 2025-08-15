@@ -71,6 +71,8 @@
   import { useI18n } from 'vue-i18n';
   import { useStorage } from '@vueuse/core';
   import { useUserStore } from '@/store';
+  import useAppStore from '@/store/modules/app';
+  import { getNamespaces } from '@/api/namespaces';
   import useLoading from '@/hooks/loading';
   import type { LoginData } from '@/api/user';
 
@@ -102,13 +104,46 @@
       setLoading(true);
       try {
         await userStore.login(values as LoginData);
+        // 登录成功后加载命名空间列表
+        const appStore = useAppStore();
+        try {
+          const nsList = await getNamespaces();
+          appStore.setNamespaceList(nsList);
+          console.log("--->")
+          console.log(appStore)
+        } catch (e) {
+          // ignore error, 继续后续流程
+
+        console.log(e)
+        }
         const { redirect, ...othersQuery } = router.currentRoute.value.query;
-        router.push({
-          name: (redirect as string) || 'Workplace',
-          query: {
-            ...othersQuery,
-          },
-        });
+        const targetName = typeof redirect === 'string' && redirect ? redirect : 'Workplace';
+        // 调试输出
+        // eslint-disable-next-line no-console
+        console.log('redirect:', redirect, 'targetName:', targetName, 'othersQuery:', othersQuery);
+        if (targetName === 'AppsAppDetailPage') {
+          // 需要 params.name，尝试从 othersQuery 或默认给一个
+          const nameParam = Array.isArray(othersQuery.name)
+            ? (othersQuery.name[0] ?? '')
+            : (othersQuery.name ?? '');
+          if (nameParam) {
+            router.push({
+              name: targetName,
+              params: { name: nameParam },
+              query: { ...othersQuery },
+            });
+          } else {
+            // 没有 name，跳转到主页
+            router.push({ name: 'Workplace' });
+          }
+        } else {
+          router.push({
+            name: targetName,
+            query: {
+              ...othersQuery,
+            },
+          });
+        }
         Message.success(t('login.form.login.success'));
         const { rememberPassword } = loginConfig.value;
         const { username, password } = values;
