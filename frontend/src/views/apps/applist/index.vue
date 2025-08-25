@@ -37,8 +37,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { getApplist, type ApplistItem } from '@/api/applist';
+import { useAppStore } from '@/store';
+
+const appStore = useAppStore();
 
 const columns = [
   { title: '应用名称', dataIndex: 'name', slotName: 'name', align: 'center' },
@@ -59,6 +62,7 @@ const filteredData = computed(() =>
   )
 );
 
+
 onMounted(async () => {
   data.value = await getApplist();
   // 调试输出，确认数据已获取
@@ -66,6 +70,16 @@ onMounted(async () => {
   console.log('applist data (array):', data.value.slice());
   console.log('filteredData:', filteredData.value);
 });
+
+// 监听命名空间变化，自动刷新应用列表
+watch(
+  () => appStore.currentNamespace,
+  async () => {
+    data.value = await getApplist(appStore.currentNamespace as string);
+    // 可选：输出日志
+    console.log('namespace changed, reload applist:', appStore.currentNamespace, data.value);
+  }
+);
 </script>
 
 <style scoped lang="less">

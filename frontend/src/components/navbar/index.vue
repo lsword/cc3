@@ -18,7 +18,6 @@
         :options="namespaceOptions"
         placeholder="命名空间"
         @change="onNamespaceChange"
-        allow-clear
       />
         <icon-menu-fold
           v-if="!topMenu && appStore.device === 'mobile'"
@@ -240,7 +239,12 @@
     { immediate: true }
   );
   const onNamespaceChange = (val: string) => {
-    // TODO: 可在此处全局切换命名空间
+    // 全局切换命名空间
+    appStore.currentNamespace = val;
+    selectedNamespace.value = val;
+    // 持久化到 localStorage，保证刷新后记忆
+    localStorage.setItem('current-namespace', val);
+    // 可在此处触发全局刷新、重新拉取依赖于命名空间的数据
     // console.log('namespace changed:', val);
   };
 

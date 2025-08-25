@@ -1,10 +1,19 @@
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception:', err);
+});
+process.on('unhandledRejection', (reason) => {
+  console.error('Unhandled Rejection:', reason);
+});
+
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import jwt from '@fastify/jwt';
-import applistRoutes from './routes/applist.js';
-import userRoutes from './routes/user.js';
-import authRoutes from './routes/auth.js';
-import namespacesRoutes from './routes/namespaces.js';
+
+import applistRoutes from './routes/applist.ts';
+import userRoutes from './routes/user.ts';
+import authRoutes from './routes/auth.ts';
+import namespacesRoutes from './routes/namespaces.ts';
+
 
 const fastify = Fastify({
   logger: true
@@ -15,11 +24,13 @@ fastify.register(jwt, {
   secret: 'your-secret-key', // 请替换为更安全的密钥
 });
 
+
 // 注册路由
 fastify.register(applistRoutes);
 fastify.register(userRoutes);
 fastify.register(authRoutes);
 fastify.register(namespacesRoutes);
+
 
 // JWT 校验装饰器
 fastify.decorate(
