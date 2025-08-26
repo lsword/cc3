@@ -64,7 +64,7 @@ const filteredData = computed(() =>
 
 
 onMounted(async () => {
-  data.value = await getApplist();
+  data.value = await getApplist(appStore.currentNamespace as string);
   // 调试输出，确认数据已获取
   console.log('applist data:', data.value);
   console.log('applist data (array):', data.value.slice());

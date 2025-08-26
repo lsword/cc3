@@ -10,7 +10,7 @@ export interface ApplistItem {
   repo: string;
 }
 
-export function getApplist(namespace = 'default'): Promise<ApplistItem[]> {
+export function getApplist(namespace: string): Promise<ApplistItem[]> {
   return axios
     .get('/api/applist', { params: { namespace } })
     .then((res) => {
@@ -31,9 +31,9 @@ export interface K8sManifest {
   [key: string]: any;
 }
 
-export function getAppDetail(name: string): Promise<K8sManifest[] | null> {
+export function getAppDetail(name: string, namespace = 'default'): Promise<K8sManifest[] | null> {
   return axios
-    .get(`/api/app/${encodeURIComponent(name)}`, { params: { namespace: 'default' } })
+    .get(`/api/app/${encodeURIComponent(name)}`, { params: { namespace } })
     .then((res) => {
       return res.data as K8sManifest[];
     });

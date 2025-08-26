@@ -8,6 +8,7 @@ export default async function applistRoutes(fastify: FastifyInstance) {
 
     // 执行 helm list 命令获取指定 namespace 的 release 列表
     const cmd = `helm list -n ${namespace} --output json`;
+    console.log(cmd);
     return new Promise((resolve) => {
       exec(cmd, (error, stdout, stderr) => {
         if (error) {
