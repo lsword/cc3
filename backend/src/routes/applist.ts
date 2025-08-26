@@ -1,14 +1,20 @@
 import { FastifyInstance } from 'fastify';
 import { exec } from 'child_process';
 import yaml from 'js-yaml';
+import dotenv from 'dotenv';
+dotenv.config();
 
 export default async function applistRoutes(fastify: FastifyInstance) {
   fastify.get('/api/applist', async (request, reply) => {
     const namespace = (request.query as any).namespace || 'default';
 
-    // 执行 helm list 命令获取指定 namespace 的 release 列表
-    const cmd = `helm list -n ${namespace} --output json`;
-    console.log(cmd);
+    // 读取 apiserver 和 token 环境变量
+    const apiserver = process.env.K8S_SERVER;
+    const token = process.env.K8S_TOKEN;
+    // 拼接 helm list 命令，带上 apiserver 和 token
+    const kubeArgs = apiserver && token ? `--kube-apiserver ${apiserver} --kube-token ${token} --kube-insecure-skip-tls-verify` : '';
+    const cmd = `helm list -n ${namespace} --output json ${kubeArgs}`;
+    console.log(apiserver, cmd);
     return new Promise((resolve) => {
       exec(cmd, (error, stdout, stderr) => {
         if (error) {
@@ -51,8 +57,12 @@ export default async function applistRoutes(fastify: FastifyInstance) {
     const namespace = (request.query as any).namespace || 'default';
     const name = (request.params as any).name;
 
+    // 读取 apiserver 和 token 环境变量
+    const apiserver = process.env.APISERVER;
+    const token = process.env.TOKEN;
+    const kubeArgs = apiserver && token ? `--kube-apiserver ${apiserver} --kube-token ${token}` : '';
     // 用 helm get manifest 获取指定 app 的 manifest
-    const cmd = `helm get manifest -n ${namespace} ${name}`;
+    const cmd = `helm get manifest -n ${namespace} ${name} ${kubeArgs}`;
     return new Promise((resolve) => {
       exec(cmd, (error, stdout, stderr) => {
         if (error) {
